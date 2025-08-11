@@ -2,6 +2,7 @@ const find = function(selector) { return document.querySelector(selector) };
 const findAll = function(selector) { return document.querySelectorAll(selector) };
 const findById = function(selector) { return document.getElementById(selector) };
 const example = find("h2");
+const HTML = document.head.parentElement;
 const body = document.body;
 const head = document.head;
 const none = "none"; const None = "none"; const NONE = "none";
@@ -53,6 +54,10 @@ const RemoveStyle = (id) => {
 	}
 	
 	HTMLElement.prototype.onEvent = function(type, listener, useCapture) {
+		return this.addEventListener(type, listener, useCapture);
+	}
+	
+	HTMLElement.prototype.listen = function(type, listener, useCapture) {
 		return this.addEventListener(type, listener, useCapture);
 	}
 	
@@ -188,6 +193,7 @@ const RemoveStyle = (id) => {
 			}
 			
 			DebugOutlinedHitboxes = !DebugOutlinedHitboxes;
+			return DebugOutlinedHitboxes;
 		},
 		hits: function() {
 			if (!DebugHitboxes) { 
@@ -197,6 +203,7 @@ const RemoveStyle = (id) => {
 			}
 			
 			DebugHitboxes = !DebugHitboxes;
+			return DebugHitboxes;
 		},
 		videoControls: function(){
 			if (VideoControlsInterval === null) {
