@@ -177,16 +177,17 @@ const RemoveStyle = (id) => {
 	
 	
 	let DebugHitboxes = false;
+	let DebugOutlinedHitboxes = false;
 	let VideoControlsInterval = null;
 	const debug = {
 		outlinedHits: function() {
-			if (!DebugHitboxes) { 
+			if (!DebugOutlinedHitboxes) { 
 				CreateStyle('dbghits2',  'html * {outline: solid 1px red !important}');
 			} else {
 				RemoveStyle('dbghits2');
 			}
 			
-			DebugHitboxes = !DebugHitboxes;
+			DebugOutlinedHitboxes = !DebugOutlinedHitboxes;
 		},
 		hits: function() {
 			if (!DebugHitboxes) { 
