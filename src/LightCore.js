@@ -13,6 +13,10 @@ const sleep = ms => new Promise(res => setTimeout(res, ms));
 const absolute = 'absolute'; const relative = 'relative'; const PRC = '100%'; const center = 'center';
 const scale = 'scale'; 
 const __LightCoreDebug__ = false;
+const random = (min, max) => {
+    min = Math.ceil(min);
+    return Math.floor(Math.random() * (Math.floor(max) - min + 1)) + min;
+}
 
 
 const runLater = async (fun, time) => {
