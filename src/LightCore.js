@@ -14,14 +14,14 @@ const scale = 'scale';
 const __LightCoreDebug__ = false;
 
 
-const runLater = async function(fun, time) {
+const runLater = async (fun, time) => {
 	if (typeof time !== 'number') {time = 1000;}
 	await sleep(time);
 	await sleep(time);
 	fun();
 }
 
-const CreateStyle = function(id, style) {
+const CreateStyle = (id, style) => {
 	let styleElement = document.createElement('style');
 	styleElement.textContent = style;
 	styleElement.id = id;
@@ -29,7 +29,7 @@ const CreateStyle = function(id, style) {
 	return styleElement;
 }
 
-const RemoveStyle = function(id) {
+const RemoveStyle = (id) => {
 	if (findById(id)) { findById(id).remove(); return true;} return false;
 }
 
@@ -207,7 +207,7 @@ const RemoveStyle = function(id) {
 
 
 
-const createElement = function(elementType, elementProps) {
+const createElementWith = (elementType, elementProps) => {
 	let newElement = document.createElement(elementType);
 	
 	// elementProps example:
