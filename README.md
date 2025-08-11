@@ -32,3 +32,8 @@ element.destroy(); // same as ".remove()" but this was done to copy GUI commands
 
 element.cornerRadius = 20; console.log(element.cornerRadius);
 ```
+## Common Functions:
+```js
+log(random(1, 2)) // -> From 1 to 2 inclusive
+sleep(100); // -> Promise
+```
