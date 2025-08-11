@@ -52,6 +52,14 @@ const RemoveStyle = (id) => {
 		return this.querySelectorAll(selector);
 	}
 	
+	HTMLElement.prototype.onEvent = function(type, listener, useCapture) {
+		return this.addEventListener(type, listener, useCapture);
+	}
+	
+	HTMLElement.prototype.addEvent = function(type, listener, useCapture) {
+		return this.addEventListener(type, listener, useCapture);
+	}
+	
 	HTMLElement.prototype.disableAnimations = async function(disableFor, unlockTime) {
 		if (typeof unlockTime !== 'number') {unlockTime = 10;}
 		disableElement = disableFor;
