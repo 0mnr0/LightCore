@@ -1,6 +1,13 @@
 # LightCore
 JavaScript Library that adds "easy" features into JS Code
 
+### You can use library by adding:
+```html
+<script src="LightCore.js" defer></script>
+```
+
+<br>
+
 # Heres some examples:
 ## Quick Access Attributes:
 ```js
@@ -39,4 +46,6 @@ sleep(100); // -> Promise
 ```
 
 
+
 I created this library "for myself" to speed up the tedious moments of JS. I can add functionality here as soon as I need it, and I apologize in advance for the "compatibility errors" on different browsers.
+
