@@ -37,3 +37,6 @@ element.cornerRadius = 20; console.log(element.cornerRadius);
 log(random(1, 2)) // -> From 1 to 2 inclusive
 sleep(100); // -> Promise
 ```
+
+
+I created this library "for myself" to speed up the tedious moments of JS. I can add functionality here as soon as I need it, and I apologize in advance for the "compatibility errors" on different browsers.
