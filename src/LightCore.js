@@ -378,7 +378,8 @@ const createElementWith = (elementType, elementProps) => {
             return Object.keys(localStorage).indexOf(key) > -1
         },
         save: function (key, value) {
-            localStorage[key] = value
+            localStorage[key] = value;
+            return value;
         },
         getInt: function (key) {
             let val = localStorage.getItem(key);
@@ -400,6 +401,12 @@ const createElementWith = (elementType, elementProps) => {
         get: (key) => {return localStorage.getItem(key)},
         getFloat: function (key) {
             return parseFloat(localStorage.getItem(key))
+        },
+        remove: (key) => {
+            localStorage.removeItem(key);
+        },
+        removeKey: (key) => {
+            localStorage.removeItem(key)
         }
     };
 	
