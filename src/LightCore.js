@@ -327,6 +327,24 @@ const createElementWith = (elementType, elementProps) => {
 		this.borderRadius = value+'px';
 	  }
 	});
+
+	Object.defineProperty(HTMLElement.prototype, 'phantom', {
+	  set(value) {
+          requestAnimationFrame(() => {
+              if (value) {
+                  this.style.position = absolute;
+                  this.style.zIndex = -100;
+                  this.style.opacity = 0;
+                  this.style.transition = 'none';
+              } else {
+                  this.style.position = '';
+                  this.style.zIndex = '';
+                  this.style.opacity = '';
+                  this.style.transition = '';
+              }
+          });
+	  }
+	});
 	
 	
 	
