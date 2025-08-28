@@ -155,6 +155,21 @@ const RemoveStyle = (id) => {
 	};
 
 
+    HTMLElement.prototype.splitBySymbols = function ()  {
+        const text = this.textContent;
+        this.textContent = ""; // очищаем
+
+        let ElementsList = [];
+        text.split("").forEach(char => {
+            const charSpan = document.createElement("span");
+            charSpan.textContent = char;
+            this.appendChild(charSpan);
+            ElementsList.push(charSpan);
+        });
+        return ElementsList;
+    }
+
+
 
 	
 	HTMLElement.prototype.makeLater = async function(fun, time) {
@@ -316,7 +331,7 @@ const createElementWith = (elementType, elementProps) => {
 			return null;
 		}
 	})
-	
+
 	
 	
 	Object.defineProperty(HTMLElement.prototype, 'cornerRadius', {
