@@ -412,3 +412,66 @@ const createElementWith = (elementType, elementProps) => {
 	
 	
 })();
+
+
+
+
+
+// ████████╗██████╗  █████╗ ███╗   ██╗███████╗██╗      █████╗ ████████╗███████╗     ████████╗ ██████╗  ██████╗ ██╗     ███████╗
+// ╚══██╔══╝██╔══██╗██╔══██╗████╗  ██║██╔════╝██║     ██╔══██╗╚══██╔══╝██╔════╝     ╚══██╔══╝██╔═══██╗██╔═══██╗██║     ██╔════╝
+//    ██║   ██████╔╝███████║██╔██╗ ██║███████╗██║     ███████║   ██║   █████╗          ██║   ██║   ██║██║   ██║██║     ███████╗
+//    ██║   ██╔══██╗██╔══██║██║╚██╗██║╚════██║██║     ██╔══██║   ██║   ██╔══╝          ██║   ██║   ██║██║   ██║██║     ╚════██║
+//    ██║   ██║  ██║██║  ██║██║ ╚████║███████║███████╗██║  ██║   ██║   ███████╗        ██║   ╚██████╔╝╚██████╔╝███████╗███████║
+//    ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝╚══════╝╚══════╝╚═╝  ╚═╝   ╚═╝   ╚══════╝        ╚═╝    ╚═════╝  ╚═════╝ ╚══════╝╚══════╝
+//                            
+
+
+(() => {
+	let defaultLocale = navigator.language;
+	let TrDict = {};
+	const TranslateAssistant = {
+		"init": function(baseLang, dict) {
+			if (typeof baseLang !== 'string') {
+				throw "You need to specify \"baseLang\" key (exmaple: 'en' | 'ru')"
+				return;
+			}
+			if (typeof dict !== 'object') {
+				runLater(() => {console.info("Exmaple:\n", {'en': {'hi': 'Hello!'}, 'ru': {'hi': 'Привет!'}})}, 1);
+				throw "You need to specify translate \"dictionary\"!\n"
+				return;
+			}
+			defaultLocale = baseLang;
+			TrDict = dict;			
+		},
+		isFullyInitialited: () => {
+			return (typeof baseLang !== 'string' && typeof TrDict === 'object' && Object.keys(TrDict).length > 0)
+		},
+		defaultLocale: function(baseLang){
+			if (typeof baseLang === 'string') {
+				defaultLocale = baseLang;
+			}
+			return defaultLocale;
+		},
+		dict: function(dictionary) {
+			if (typeof dictionary === 'object') {
+				TrDict = dictionary;
+			}
+			return TrDict;
+		},
+		
+		translate: {
+			all: function() {
+				const elements = findAll('*[data-i18n]')
+				elements.forEach(el => {
+					const key = el.getAttribute("data-i18n");
+					el.textContent = TrDict[defaultLocale][key] || key;
+				})
+			},
+			key: function(key) {
+				if (key === undefined) {return TrDict}
+				return TrDict[defaultLocale][key]
+			}
+		}
+	};
+	window.TranslateAssistant = TranslateAssistant;
+})();
