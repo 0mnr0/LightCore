@@ -442,7 +442,7 @@ const createElementWith = (elementType, elementProps) => {
 			}
 			defaultLocale = baseLang;
 			TrDict = dict;
-			window.Translate = TranslateAssistant.translate;
+			window.getString = TranslateAssistant.translate.get;
 		},
 		isFullyInitialited: () => {
 			return (typeof baseLang !== 'string' && typeof TrDict === 'object' && Object.keys(TrDict).length > 0)
