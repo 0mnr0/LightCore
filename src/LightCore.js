@@ -460,16 +460,33 @@ const createElementWith = (elementType, elementProps) => {
 		},
 		
 		translate: {
+			get: function(key) {
+				if (TrDict["NOT_TRANSLATEABLE"]?.[key] !== undefined) {
+					return TrDict["NOT_TRANSLATEABLE"][key]
+				}
+				return TrDict[defaultLocale]?.[key] || key
+			},
 			all: function() {
-				const elements = findAll('*[data-i18n]')
+				const elements = findAll('*[data-i18n]');
 				elements.forEach(el => {
 					const key = el.getAttribute("data-i18n");
-					el.textContent = TrDict[defaultLocale][key] || key;
-				})
+					const translation = TranslateAssistant.translate.get(key);
+
+					if (translation) {
+						const textNode = [...el.childNodes].find(
+							node => node.nodeType === Node.TEXT_NODE && node.nodeValue.trim() !== ""
+						);
+						if (textNode) {
+							textNode.nodeValue = translation;
+						} else {
+							el.insertBefore(document.createTextNode(translation), el.firstChild);
+						}
+					}
+				});
 			},
 			key: function(key) {
 				if (key === undefined) {return TrDict}
-				return TrDict[defaultLocale][key]
+				return TranslateAssistant.translate.get(key)
 			}
 		}
 	};
