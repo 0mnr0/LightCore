@@ -447,6 +447,9 @@ const createElementWith = (elementType, elementProps) => {
 		isFullyInitialited: () => {
 			return (typeof baseLang !== 'string' && typeof TrDict === 'object' && Object.keys(TrDict).length > 0)
 		},
+        isLangAvailable: (lang) => {
+            return Object.keys(TrDict).includes(lang)
+        },
 		defaultLocale: function(baseLang){
 			if (typeof baseLang === 'string') {
 				defaultLocale = baseLang;
