@@ -163,7 +163,6 @@ TranslateAssistant.init("en", {
 | ---------------------- | ------------ |
 | `absolute`             | `"absolute"` |
 | `relative`             | `"relative"` |
-| `PRC`                  | `"100%"`     |
 | `center`               | `"center"`   |
 | `scale`                | `"scale"`    |
 | `none`, `None`, `NONE` | `"none"`     |
@@ -179,10 +178,10 @@ const box = createElementWith("div", {
   height: "100px" 
 });
 
-document.body.appendChild(box);
+body.appendChild(box);
 
 box.alpha = 0.5;
-box.makeLater(() => box.alpha = 1, 1000);
+box.runLater(() => box.alpha = 1, 1000);
 ```
 
 ---
