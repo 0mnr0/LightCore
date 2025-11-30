@@ -407,8 +407,35 @@ const createElementWith = (elementType, elementProps) => {
         },
         removeKey: (key) => {
             localStorage.removeItem(key)
-        }
+        },
+		clear: () => {localStorage.clear()}
     };
+	
+	
+	window.SessionStorage = {
+		isKeyExists(key) { return Object.keys(sessionStorage).indexOf(key) > -1 },
+        save: function (key, value) { sessionStorage[key] = value; return value; },
+        getInt: function (key) {
+            let val = sessionStorage.getItem(key);
+            if (val === null) {
+                return null
+            } // Because Number(null) is returning "0"
+            return Number(val);
+        },
+        getBool: function (key) {
+            let val = sessionStorage.getItem(key);
+            if (val === undefined || val === null) {
+                return val
+            } // Boolean() -> false
+            return val;
+        },
+        getString: function (key) { return sessionStorage.getItem(key); },
+        get: (key) => {return sessionStorage.getItem(key)},
+        getFloat: function (key) { return parseFloat(sessionStorage.getItem(key)) },
+        remove: (key) => { sessionStorage.removeItem(key); },
+        removeKey: (key) => { sessionStorage.removeItem(key) },
+		clear: () => {sessionStorage.clear()}
+	}
 	
 	
 })();
