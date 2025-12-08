@@ -536,3 +536,243 @@ const createElementWith = (elementType, elementProps) => {
     };
     window.TranslateAssistant = TranslateAssistant;
 })();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+class DatabaseWorker {
+    constructor(db, namespace = "default") {
+        this.db = db;
+        this.storeName = "keyvalue";
+        this.namespace = namespace;
+        this._listeners = new Set();
+    }
+
+    // ===== STATIC =====
+
+    static isAvailable() {
+        try {
+            return typeof indexedDB !== "undefined" && indexedDB !== null;
+        } catch {
+            return false;
+        }
+    }
+
+    static async open(dbName, namespace = "default") {
+        if (!this.isAvailable()) {
+            throw new Error("IndexedDB is not available in this environment");
+        }
+
+        return new Promise((resolve, reject) => {
+            const request = indexedDB.open(dbName, 1);
+
+            request.onupgradeneeded = (event) => {
+                const db = event.target.result;
+                if (!db.objectStoreNames.contains("keyvalue")) {
+                    db.createObjectStore("keyvalue");
+                }
+            };
+
+            request.onsuccess = (event) => {
+                resolve(new DatabaseWorker(event.target.result, namespace));
+            };
+
+            request.onerror = () => reject(request.error);
+        });
+    }
+
+    withNamespace(namespace) {
+        return new DatabaseWorker(this.db, namespace);
+    }
+
+    // ===== INTERNAL =====
+
+    _transaction(mode = "readonly") {
+        return this.db.transaction(this.storeName, mode).objectStore(this.storeName);
+    }
+
+    _nsKey(key) {
+        return `${this.namespace}:${key}`;
+    }
+
+    _emitChange(type, key, value) {
+        for (const fn of this._listeners) {
+            try {
+                fn({ type, key, value, namespace: this.namespace });
+            } catch {}
+        }
+    }
+
+    // ===== EVENTS =====
+
+    onChange(callback) {
+        this._listeners.add(callback);
+        return () => this._listeners.delete(callback); // unsubscribe
+    }
+
+    // ===== TTL SAFE =====
+
+    _wrapValue(value, ttl) {
+        let expiresAt = null;
+        if (typeof ttl === "number" && ttl > 0) {
+            expiresAt = Date.now() + ttl;
+        }
+
+        return {
+            value,
+            expiresAt
+        };
+    }
+
+    _unwrapValue(data) {
+        if (!data || typeof data !== "object" || !("value" in data)) {
+            return { valid: false, value: null };
+        }
+
+        if (data.expiresAt && Date.now() > data.expiresAt) {
+            return { valid: false, expired: true, value: null };
+        }
+
+        return { valid: true, expired: false, value: data.value };
+    }
+
+    // ===== API =====
+
+    async set(key, value, options = {}) {
+        const ttl = options.ttl ?? null;
+
+        return new Promise((resolve, reject) => {
+            const store = this._transaction("readwrite");
+            const data = this._wrapValue(value, ttl);
+
+            const request = store.put(data, this._nsKey(key));
+
+            request.onsuccess = () => {
+                this._emitChange("set", key, value);
+                resolve(true);
+            };
+            request.onerror = () => reject(request.error);
+        });
+    }
+
+    async get(key) {
+        return new Promise((resolve, reject) => {
+            const store = this._transaction("readonly");
+            const request = store.get(this._nsKey(key));
+
+            request.onsuccess = async () => {
+                const parsed = this._unwrapValue(request.result);
+
+                if (!parsed.valid) {
+                    if (parsed.expired) {
+                        await this.removeKey(key); // auto clear expired
+                    }
+                    return resolve(null);
+                }
+
+                resolve(parsed.value);
+            };
+
+            request.onerror = () => reject(request.error);
+        });
+    }
+
+    async isKeyExists(key) {
+        return new Promise((resolve, reject) => {
+            const store = this._transaction("readonly");
+            const request = store.getKey(this._nsKey(key));
+
+            request.onsuccess = () => resolve(request.result !== undefined);
+            request.onerror = () => reject(false);
+        });
+    }
+
+    async getWhole() {
+        return new Promise((resolve, reject) => {
+            const store = this._transaction("readonly");
+            const request = store.getAll();
+            const keysRequest = store.getAllKeys();
+
+            const results = {};
+
+            request.onsuccess = () => {
+                const values = request.result;
+                keysRequest.onsuccess = () => {
+                    const keys = keysRequest.result;
+                    keys.forEach((fullKey, i) => {
+                        if (!fullKey.startsWith(this.namespace + ":")) return;
+
+                        const shortKey = fullKey.replace(this.namespace + ":", "");
+                        const parsed = this._unwrapValue(values[i]);
+
+                        if (parsed.valid) {
+                            results[shortKey] = parsed.value;
+                        }
+                    });
+                    resolve(results);
+                };
+            };
+
+            request.onerror = () => reject(request.error);
+        });
+    }
+
+    async removeKey(key) {
+        return new Promise((resolve, reject) => {
+            const store = this._transaction("readwrite");
+            const request = store.delete(this._nsKey(key));
+
+            request.onsuccess = () => {
+                this._emitChange("remove", key, null);
+                resolve(true);
+            };
+            request.onerror = () => reject(request.error);
+        });
+    }
+
+    async clear() {
+        return new Promise(async (resolve, reject) => {
+            const store = this._transaction("readwrite");
+            const keysReq = store.getAllKeys();
+
+            keysReq.onsuccess = () => {
+                const keys = keysReq.result.filter(k => 
+                    k.startsWith(this.namespace + ":")
+                );
+
+                if (!keys.length) return resolve(true);
+
+                const tx = this.db.transaction(this.storeName, "readwrite");
+                const st = tx.objectStore(this.storeName);
+
+                keys.forEach(k => st.delete(k));
+
+                tx.oncomplete = () => {
+                    this._emitChange("clear", null, null);
+                    resolve(true);
+                };
+                tx.onerror = () => reject(tx.error);
+            };
+
+            keysReq.onerror = () => reject(keysReq.error);
+        });
+    }
+}
