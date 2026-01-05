@@ -103,9 +103,9 @@ createElementWith("div", {
 
 ---
 
-## 💾 LocalStorage API
+## 💾 LocalStorage / SessionStorage API
 
-Доступно через `window.LocalStorage`:
+Доступно через `window.LocalStorage` и `window.SessionStorage`:
 
 | Метод                            | Описание                           |
 | -------------------------------- | ---------------------------------- |
@@ -130,13 +130,14 @@ createElementWith("div", {
 TranslateAssistant.init("en", {
   en: { hello: "Hello" },
   ru: { hello: "Привет" },
-  by: "ru" // alias языка
+  by: "ru" // alias языка (например: "ru-RU": "ru")
 });
 ```
 
 ### Методы
 
-* `TranslateAssistant.isLangAvailable(lang)` — проверка языка.
+* `TranslateAssistant.isLangIncluded(lang, translateDictionary)` — проверка языка в словаре.
+* `TranslateAssistant.isLangAvailable(lang)` — проверка языка в загруженном словаре.
 * `TranslateAssistant.defaultLocale(lang)` — получить/установить язык по умолчанию.
 * `TranslateAssistant.dict(dict?)` — получить/заменить словарь.
 * `TranslateAssistant.getAvailableLanguages()` — список доступных языков.
