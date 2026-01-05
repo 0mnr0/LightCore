@@ -22,7 +22,6 @@ const random = (min, max) => {
 const runLater = async (fun, time) => {
 	if (typeof time !== 'number') {time = 1000;}
 	await sleep(time);
-	await sleep(time);
 	fun();
 }
 
